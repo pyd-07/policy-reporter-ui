@@ -8,6 +8,15 @@ import (
 )
 
 func MapCustomBoardToModel(cb *v1alpha1.CustomBoard) *CustomBoard {
+	view := utils.Fallback(cb.Spec.Display, cb.Spec.RenderOptions.ResultView)
+	views := utils.Map(cb.Spec.RenderOptions.ResultViews, func(v v1alpha1.ResultView) string { return string(v) })
+	if len(views) == 0 {
+		if view == "" {
+			view = string(v1alpha1.DisplayResources)
+		}
+		views = []string{view}
+	}
+
 	return &CustomBoard{
 		ID:            cb.Name,
 		Name:          cb.Spec.Title,
@@ -17,7 +26,8 @@ func MapCustomBoardToModel(cb *v1alpha1.CustomBoard) *CustomBoard {
 		},
 		Display: string(cb.Spec.Display),
 		RenderOptions: RenderOptions{
-			ResultView:    string(utils.Fallback(cb.Spec.Display, cb.Spec.RenderOptions.ResultView)),
+			ResultView:    view,
+			ResultViews:   views,
 			DashboardMode: cb.Spec.RenderOptions.DashboardMode,
 		},
 		Namespaces:    NamespaceSelector{LabelSelector: cb.Spec.NamespaceSelector.LabelSelector, List: cb.Spec.NamespaceSelector.List},
@@ -28,6 +38,15 @@ func MapCustomBoardToModel(cb *v1alpha1.CustomBoard) *CustomBoard {
 }
 
 func MapNamespaceCustomBoardToModel(cb *v1alpha1.NamespaceCustomBoard) *CustomBoard {
+	view := utils.Fallback(cb.Spec.Display, cb.Spec.RenderOptions.ResultView)
+	views := utils.Map(cb.Spec.RenderOptions.ResultViews, func(v v1alpha1.ResultView) string { return string(v) })
+	if len(views) == 0 {
+		if view == "" {
+			view = string(v1alpha1.DisplayResources)
+		}
+		views = []string{view}
+	}
+
 	return &CustomBoard{
 		ID:            fmt.Sprintf("%s-%s", cb.Namespace, cb.Name),
 		Name:          cb.Spec.Title,
@@ -35,7 +54,11 @@ func MapNamespaceCustomBoardToModel(cb *v1alpha1.NamespaceCustomBoard) *CustomBo
 		Filter: FilterList{
 			Include: MapIncludeFilter(cb.Spec.Filter),
 		},
-		Display:       string(cb.Spec.Display),
+		Display: string(cb.Spec.Display),
+		RenderOptions: RenderOptions{
+			ResultView:  view,
+			ResultViews: views,
+		},
 		Namespaces:    NamespaceSelector{List: []string{cb.Namespace}},
 		Sources:       MapSources(cb.Spec.SourceSelector),
 		PolicyReports: MapPolicyReports(cb.Spec.PolicyReportSelector),
