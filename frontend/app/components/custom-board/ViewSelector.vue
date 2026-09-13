@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ResultView } from '~/types/core'
+type ResultView = 'resources' | 'results' | 'policies'
 
 withDefaults(defineProps<{
   modelValue: ResultView
