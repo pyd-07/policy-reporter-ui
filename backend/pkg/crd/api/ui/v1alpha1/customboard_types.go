@@ -47,7 +47,7 @@ type CustomBoardSpec struct {
 	AccessControl *AccessControl `json:"accessControl,omitempty"`
 
 	// Allowed values are "resources" or "results".
-	// NOTE: "Name" is being deprecated in favor of "renderOptions.resultView".
+	// NOTE: "display" is deprecated in favor of "renderOptions.resultView".
 	// +optional
 	Display ResultView `json:"display,omitempty"`
 
@@ -55,7 +55,6 @@ type CustomBoardSpec struct {
 	// +required
 	NamespaceSelector NamespaceSelector `json:"namespaces"`
 
-	// NamespaceSelector allows to select visualized namespaces
 	// +optional
 	RenderOptions RenderOptions `json:"renderOptions"`
 
